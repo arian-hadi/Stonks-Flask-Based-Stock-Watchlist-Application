@@ -1,0 +1,24 @@
+{
+  "name": "flask-project",
+  "version": "1.0.0",
+  "main": "postcss.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "buildcss":"npx tailwindcss -i app/static/css/input.css -o app/static/css/output.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arian-hadi/Stonks-Flask-Based-Stock-Watchlist-Application.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arian-hadi/Stonks-Flask-Based-Stock-Watchlist-Application/issues"
+  },
+  "homepage": "https://github.com/arian-hadi/Stonks-Flask-Based-Stock-Watchlist-Application#readme",
+  "description": "",
+  "dependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
