@@ -5,14 +5,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{url_for('static',filename='css/output.css')}}" rel="stylesheet">
-    <title>Watchlist</title>
+    <title>Document</title>
 </head>
 <body>
-    <h1>My Stock Watchlist</h1>
+    <h1>Stock Watchlist</h1>
+    
+    <!-- Display user-selected stocks -->
+    <h2>Your Watchlist</h2>
+    <ul>
+        {% if user_stocks %}
+            {% for stock in user_stocks %}
+                <li>{{ stock }}</li>
+            {% endfor %}
+        {% else %}
+            <li>No stocks in your watchlist yet.</li>
+        {% endif %}
+    </ul>
+
+    <!-- Form to add stocks -->
+    <h2>Add a Stock</h2>
+    <form method="post">
+        <input type="text" name="stock" placeholder="Enter stock ticker" required>
+        <button type="submit">Add Stock</button>
+    </form>
+
+    <!-- Predefined stock list -->
+    <h2>Popular Stocks</h2>
     <ul>
         {% for stock in stocks %}
-        <li>{{ stock }}</li>
+            <li>{{ stock }}</li>
         {% endfor %}
     </ul>
 </body>
+</html>
 </html>
