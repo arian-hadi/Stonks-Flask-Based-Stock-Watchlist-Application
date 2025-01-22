@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "postcss.config.js",
   "scripts": {
-    "build:css": "tailwindcss -i ./static/src/input.css -o ./static/dist/output.css --watch"
+  "buildcss":"npx tailwindcss -i app/static/css/input.css -o app/static/css/output.css --watch"
   },
   "repository": {
     "type": "git",
