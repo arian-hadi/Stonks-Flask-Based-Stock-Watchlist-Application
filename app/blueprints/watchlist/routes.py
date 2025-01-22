@@ -4,4 +4,6 @@ watchlist_bp = Blueprint('watchlist_bp', __name__)
 
 @watchlist_bp.route('/')
 def watchlist():
-    return render_template("watchlist.html")
+    stocks = ["AAPL", "GOOGL", "AMZN", "TSLA", "MSFT"]
+    return render_template("watchlist.html",stocks = stocks)
+

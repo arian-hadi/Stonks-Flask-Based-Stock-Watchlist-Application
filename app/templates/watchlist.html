@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{url_for('static',filename='css/output.css')}}" rel="stylesheet">
-    <title>Document</title>
+    <title>Watchlist</title>
 </head>
 <body>
-    <div class="flex justify-center items-center min-h-screen">
-        <a href="#" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Welcome to the watchlist</h5>
-            <p class="font-normal text-gray-700 dark:text-gray-400">This website is currently under development and this is a test</p>
-        </a>
-    </div>
+    <h1>My Stock Watchlist</h1>
+    <ul>
+        {% for stock in stocks %}
+        <li>{{ stock }}</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
