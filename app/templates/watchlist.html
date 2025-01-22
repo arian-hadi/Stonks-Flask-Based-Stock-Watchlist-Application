@@ -25,10 +25,11 @@
     <!-- Form to add stocks -->
     <h2>Add a Stock</h2>
     <form method="post">
-        <input type="text" name="stock" placeholder="Enter stock ticker" required>
-        <button type="submit">Add Stock</button>
+        {{ form.hidden_tag() }}
+        {{ form.stock.label }}
+        {{ form.stock(size=20) }}
+        {{ form.submit() }}
     </form>
-
     <!-- Predefined stock list -->
     <h2>Popular Stocks</h2>
     <ul>
