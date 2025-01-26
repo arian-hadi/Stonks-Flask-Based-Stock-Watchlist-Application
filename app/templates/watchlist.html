@@ -8,30 +8,21 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Stock Watchlist</h1>
-    
-    <!-- Display user-selected stocks -->
+    <h1>My Watchlist</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.stock.label }} {{ form.stock() }}
+        <button type="submit">Add Stock</button>
+    </form>
+
     <h2>Your Watchlist</h2>
     <ul>
-        {% if user_stocks %}
-            {% for stock in user_stocks %}
-                <li>{{ stock }}</li>
-            {% endfor %}
-        {% else %}
-            <li>No stocks in your watchlist yet.</li>
-        {% endif %}
+        {% for stock in user_stocks %}
+            <li>{{ stock.symbol }}</li>
+        {% endfor %}
     </ul>
 
-    <!-- Form to add stocks -->
-    <h2>Add a Stock</h2>
-    <form method="post">
-        {{ form.hidden_tag() }}
-        {{ form.stock.label }}
-        {{ form.stock(size=20) }}
-        {{ form.submit() }}
-    </form>
-    <!-- Predefined stock list -->
-    <h2>Popular Stocks</h2>
+    <h2>Stock Suggestions</h2>
     <ul>
         {% for stock in stocks %}
             <li>{{ stock }}</li>

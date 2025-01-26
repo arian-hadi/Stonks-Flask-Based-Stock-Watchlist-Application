@@ -1,4 +1,4 @@
-from app.db_extention import db
+from app.db_extension import db
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -9,5 +9,5 @@ class User(db.Model):
 
 class Stock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    symbol = db.Column(db.String(10), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    symbol = db.Column(db.String(10), nullable=False, unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
