@@ -24,4 +24,4 @@ def watchlist():
     # Retrieve only the current user's stocks
     user_stocks = Stock.query.filter_by(user_id=current_user.id).all()
 
-    return render_template("watchlist.html", form=form, stocks=stocks, user_stocks=user_stocks)
+    return render_template("watchlist.html", form=form, stocks=stocks, user_stocks=user_stocks,username = current_user.username)
