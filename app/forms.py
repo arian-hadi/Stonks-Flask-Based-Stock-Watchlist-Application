@@ -4,6 +4,7 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo
 from .models import *
 
 
+
 #watchlist form
 class StockForm(FlaskForm):
     stock = StringField("Stock", validators=[DataRequired()])
