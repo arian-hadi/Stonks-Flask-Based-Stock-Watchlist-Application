@@ -241,6 +241,20 @@ dnspython = ">=2.0.0"
 idna = ">=2.0.0"
 
 [[package]]
+name = "finnhub-python"
+version = "2.4.22"
+description = "Finnhub API"
+optional = false
+python-versions = "*"
+files = [
+    {file = "finnhub_python-2.4.22-py3-none-any.whl", hash = "sha256:323ea33b38df54a15b4cdc028677b35b4c577d01eb6734c7398094a681b8c503"},
+    {file = "finnhub_python-2.4.22.tar.gz", hash = "sha256:deaceb7c56af8719b84aa714818dc95ffd272d362eb73e83d2dc8d667d386737"},
+]
+
+[package.dependencies]
+requests = ">=2.22.0"
+
+[[package]]
 name = "flask"
 version = "3.1.0"
 description = "A simple framework for building complex web applications."
@@ -777,4 +791,4 @@ email = ["email-validator"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "aca7d6584b5a9d104c3c7149dcb700d85138bc6eea6e80e8c9044c5118690259"
+content-hash = "79abad5b3e9ec27ce02c4d783402e1bac1fda5e230dfa25fea32b4bcc22dcd01"

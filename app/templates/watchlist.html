@@ -16,17 +16,33 @@
     </form>
 
     <h2>Your Watchlist</h2>
+    {% if error %}
+    <div style="color: red; font-weight: bold;">
+        ⚠️ {{ error }}
+    </div>
+    {% endif %}
+
     <ul>
-        {% for stock in user_stocks %}
-            <li>{{ stock.symbol }}</li>
+        {% for stock in stocks %}  {# 'stocks' now contains real-time stock data #}
+            <li>
+                <strong>{{ stock.symbol }}</strong> {{ stock.price }}  
+                <br>
+                <span class="{% if stock.change_percent|float >= 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                    {{ stock.change_percent }}%
+                </span>  
+            </li>
+            <hr>
         {% endfor %}
     </ul>
+    
 
     <h2>Stock Suggestions</h2>
     <ul>
-        {% for stock in stocks %}
-            <li>{{ stock }}</li>
-        {% endfor %}
+    {% for stock in stocks %}
+        <p>{{ stock.symbol }} {{ stock.price }}</p>
+        <p>{{ stock.change_percent }}% ({{ stock.change_amount }})</p>
+        <hr>
+    {% endfor %}    
     </ul>
 </body>
 </html>
