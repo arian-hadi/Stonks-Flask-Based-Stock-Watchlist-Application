@@ -7,13 +7,33 @@
     <title>Document</title>
 </head>
 <body>
-    {% for stock in stocks %}
-    <tr>
-        <td><a href="{{ url_for('stock_details.stock_details', symbol=stock['symbol']) }}">{{ stock['symbol'] }}</a></td>
-        <td>${{ stock['price'] }}</td>
-        <td>{{ stock['change_percent'] }}%</td>
-        <td>${{ stock['change_amount'] }}</td>
-    </tr>
-    {% endfor %}
+    <header>
+        <h1>Stock Details: {{ stock.symbol }}</h1>
+    </header>
+    <main>
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% else %}
+            <table>
+                <tr>
+                    <th>Symbol</th>
+                    <td>{{ stock.symbol }}</td>
+                </tr>
+                <tr>
+                    <th>Current Price</th>
+                    <td>${{ stock.price }}</td>
+                </tr>
+                <tr>
+                    <th>Change (Amount)</th>
+                    <td>${{ stock.change_amount }}</td>
+                </tr>
+                <tr>
+                    <th>Change (Percent)</th>
+                    <td>{{ stock.change_percent }}%</td>
+                </tr>
+            </table>
+        {% endif %}
+        <a href="{{ url_for('watchlist.watchlist') }}">Back to Watchlist</a>
+    </main>
 </body>
 </html>

@@ -1,22 +1,3 @@
-# import finnhub
-# from app.config import FINNHUB_SECRET_KEY
-
-# finnhub_client = finnhub.Client(api_key=FINNHUB_SECRET_KEY)
-
-# def get_stock_quote(symbol):
-#     """Fetch real-time stock price, percent change, and absolute change."""
-#     try:
-#         data = finnhub_client.quote(symbol)
-#         return {
-#             "symbol": symbol,
-#             "price": round(data["c"], 2),  # Current price
-#             "change_percent": round(data["dp"], 2),  # Change in percentage
-#             "change_amount": round(data["d"], 2),  # Change in absolute value
-#         }
-#     except Exception as e:
-#         print(f"Error fetching stock quote for {symbol}: {e}")
-#         return {"symbol": symbol, "price": "N/A", "change_percent": "N/A", "change_amount": "N/A", "error": True}
-
 import requests
 import os
 
