@@ -3,7 +3,7 @@ from app.extension import db
 from app.forms import StockForm
 from app.models import Stock
 from flask_login import login_required,current_user
-from app.blueprints.watchlist.finnhub_utils import get_stock_quote
+from app.utils.finnhub_utils import get_stock_quote
 
 watchlist_bp = Blueprint('watchlist', __name__)
 
@@ -11,7 +11,6 @@ watchlist_bp = Blueprint('watchlist', __name__)
 @login_required
 def watchlist():
     form = StockForm()
-    #stocks = ["AAPL", "GOOGL", "AMZN", "TSLA", "MSFT"]
     error = None
     if form.validate_on_submit():
         new_stock = form.stock.data.upper()
