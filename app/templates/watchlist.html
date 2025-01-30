@@ -1,49 +1,68 @@
-<!-- File ./templates/index.html  -->
+<!-- File ./templates/watchlist.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{{url_for('static',filename='css/output.css')}}" rel="stylesheet">
-    <title>Document</title>
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+    <title>Watchlist</title>
 </head>
+
 <body>
-    <h1>{{ username }}'s Watchlist</h1>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        {{ form.stock.label }} {{ form.stock() }}
-        <button type="submit">Add Stock</button>
-    </form>
+<div class="max-w-4xl mx-auto mt-10">
+    <h1 class="text-2xl font-bold text-center mb-6">Stock Watchlist</h1>
 
-    <h2>Your Watchlist</h2>
-    {% if error %}
-    <div style="color: red; font-weight: bold;">
-        ⚠️ {{ error }}
+    <!-- Available Stocks Section -->
+    <div class="bg-gray-100 p-5 rounded-lg shadow-lg mb-6">
+        <h2 class="text-xl font-semibold mb-3">Available Stocks</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {% for symbol, stock in stocks.items() %}
+            <div class="flex justify-between items-center bg-white p-3 rounded-lg shadow">
+                <div>
+                    <p class="font-medium">{{ stock.symbol }}</p>
+                    <p class="text-sm text-gray-500">Price: ${{ stock.price }}</p>
+                    <p class="text-sm text-gray-500">Change: {{ stock.change_percent }}%</p>
+                </div>
+
+                {% if stock.symbol in user_stocks %}
+                <!-- Remove Button Form -->
+                <form method="POST" action="{{ url_for('watchlist.remove_stock', symbol=stock.symbol) }}">
+                    {{ delete_form.hidden_tag() }}
+                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                        Remove
+                    </button>
+                </form>
+                {% else %}
+                <!-- Add Button Form -->
+                <form method="POST" action="{{ url_for('watchlist.add_stock', symbol=stock.symbol) }}">
+                    {{ add_form.hidden_tag() }}
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        Add
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
     </div>
-    {% endif %}
 
-    <ul>
-        {% for stock in stocks %}  {# 'stocks' now contains real-time stock data #}
-            <li>
-                <strong>{{ stock.symbol }}</strong> {{ stock.price }}  
-                <br>
-                <span class="{% if stock.change_percent|float >= 0 %}text-green-500{% else %}text-red-500{% endif %}">
-                    {{ stock.change_percent }}%
-                </span>  
+    <!-- User's Watchlist Section -->
+    <div class="bg-gray-100 p-5 rounded-lg shadow-lg">
+        <h2 class="text-xl font-semibold mb-3">Your Watchlist</h2>
+        <ul>
+            {% for stock in user_stocks %}
+            <li class="flex justify-between items-center bg-white p-3 rounded-lg shadow mb-2">
+                <span class="font-medium">{{ stock }}</span>
+                <form method="POST" action="{{ url_for('watchlist.remove_stock', symbol=stock) }}">
+                    {{ delete_form.hidden_tag() }}
+                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                        Remove
+                    </button>
+                </form>
             </li>
-            <hr>
-        {% endfor %}
-    </ul>
-    
-
-    <h2>Stock Suggestions</h2>
-    <ul>
-    {% for stock in stocks %}
-        <p>{{ stock.symbol }} {{ stock.price }}</p>
-        <p>{{ stock.change_percent }}% ({{ stock.change_amount }})</p>
-        <hr>
-    {% endfor %}    
-    </ul>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 </body>
-</html>
 </html>
