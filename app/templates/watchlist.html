@@ -24,6 +24,12 @@
                     <p class="text-sm text-gray-500">Change: {{ stock.change_percent }}%</p>
                 </div>
 
+                <Button type="submit" class="bg-green-500 text-white px-2 py-2 rounded hover:bg-green-600 inline-block text-center">
+                    <a href="{{ url_for('stock_details.stock_details', symbol=stock.symbol) }}"> 
+                        Detail
+                    </a>
+                </Button>
+
                 {% if stock.symbol in user_stocks %}
                 <!-- Remove Button Form -->
                 <form method="POST" action="{{ url_for('watchlist.remove_stock', symbol=stock.symbol) }}">

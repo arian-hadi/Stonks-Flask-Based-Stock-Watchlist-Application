@@ -4,36 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{url_for('static',filename='css/output.css')}}" rel="stylesheet">
-    <title>Document</title>
+    <title>{{ stock.ticker }} Details</title>
 </head>
 <body>
     <header>
         <h1>Stock Details: {{ stock.symbol }}</h1>
     </header>
-    <main>
-        {% if error %}
-            <p style="color: red;">{{ error }}</p>
-        {% else %}
-            <table>
-                <tr>
-                    <th>Symbol</th>
-                    <td>{{ stock.symbol }}</td>
-                </tr>
-                <tr>
-                    <th>Current Price</th>
-                    <td>${{ stock.price }}</td>
-                </tr>
-                <tr>
-                    <th>Change (Amount)</th>
-                    <td>${{ stock.change_amount }}</td>
-                </tr>
-                <tr>
-                    <th>Change (Percent)</th>
-                    <td>{{ stock.change_percent }}%</td>
-                </tr>
-            </table>
-        {% endif %}
-        <a href="{{ url_for('watchlist.watchlist') }}">Back to Watchlist</a>
-    </main>
+		<div class="container mx-auto p-6">
+			<h1 class="text-3xl font-bold text-white mb-4">Stock Details for {{ symbol }}</h1>
+		
+			{% if error %}
+				<p class="text-red-500">{{ error }}</p>
+			{% else %}
+				<!-- Stock Price Info -->
+				<div class="grid grid-cols-2 gap-4 bg-gray-800 p-4 rounded-lg">
+					<p class="text-lg text-white">Current Price: <span class="font-bold">${{ stock.current_price }}</span></p>
+					<p class="text-lg text-white">Change: <span class="font-bold {% if stock.change < 0 %} text-red-500 {% else %} text-green-500 {% endif %}">${{ stock.change }}</span></p>
+					<p class="text-lg text-white">Percentage Change: <span class="font-bold {% if stock.percent_change < 0 %} text-red-500 {% else %} text-green-500 {% endif %}">{{ stock.percent_change }}%</span></p>
+					<p class="text-lg text-white">Open: <span class="font-bold">${{ stock.open }}</span></p>
+					<p class="text-lg text-white">High: <span class="font-bold">${{ stock.high }}</span></p>
+					<p class="text-lg text-white">Low: <span class="font-bold">${{ stock.low }}</span></p>
+					<p class="text-lg text-white">Previous Close: <span class="font-bold">${{ stock.previous_close }}</span></p>
+				</div>
+		
+				<!-- Real-time Stock Price Trend -->
+				<div class="bg-gray-900 p-6 rounded-lg mt-6">
+					<h2 class="text-xl text-white font-semibold">Stock Price Trend</h2>
+					<div id="lineChart"></div>
+				</div>
+		
+				<!-- Stock Price Comparison -->
+				<div class="bg-gray-900 p-6 rounded-lg mt-6">
+					<h2 class="text-xl text-white font-semibold">Stock Price Comparison</h2>
+					<div id="barChart"></div>
+				</div>
+		
+				<!-- Price Change Gauge -->
+				<div class="bg-gray-900 p-6 rounded-lg mt-6">
+					<h2 class="text-xl text-white font-semibold">Stock Price Change (%)</h2>
+					<div id="gaugeChart"></div>
+				</div>
+			{% endif %}
+		</div>
+		<a href="{{ url_for('watchlist.watchlist') }}">Back to Watchlist</a>
+		
+		<!-- Plotly Scripts -->
+		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+		<script>
+			var lineChart = JSON.parse('{{ line_chart_json | safe }}');
+			var barChart = JSON.parse('{{ bar_chart_json | safe }}');
+			var gaugeChart = JSON.parse('{{ gauge_chart_json | safe }}');
+		
+			Plotly.newPlot('lineChart', lineChart.data, lineChart.layout);
+			Plotly.newPlot('barChart', barChart.data, barChart.layout);
+			Plotly.newPlot('gaugeChart', gaugeChart.data, gaugeChart.layout);
+		</script>
+		
+
 </body>
 </html>
