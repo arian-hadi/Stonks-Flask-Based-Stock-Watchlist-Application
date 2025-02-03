@@ -1,50 +1,8 @@
-# import plotly.graph_objs as go
-# import plotly.io as pio
-# from flask import Blueprint, render_template,jsonify
-# from flask_login import login_required
-# from app.utils.finnhub_utils import get_stock_quote
-# from app.utils.stock_chart import get_stock_chart_data
-
-# stock_details_bp = Blueprint('stock_details', __name__)
-
-
-# def create_stock_chart(chart_data):
-#     fig = go.Figure()
-
-#     fig.add_trace(go.Scatter(
-#         x=chart_data["labels"], 
-#         y=chart_data["prices"], 
-#         mode='lines',
-#         name='Stock Price'
-#     ))
-
-#     fig.update_layout(
-#         title="Stock Price Trend",
-#         xaxis_title="Date",
-#         yaxis_title="Price (USD)",
-#         template="plotly_dark"
-#     )
-
-#     return pio.to_json(fig) 
-
-# @stock_details_bp.route('/stock/<symbol>', methods=['GET'])
-# @login_required
-# def stock_details(symbol):
-#     stock_data = get_stock_quote(symbol)
-#     chart_data = get_stock_chart_data(symbol, resolution="D", days=30)   
-#     if stock_data.get("error"):
-#         return render_template("stock_details.html", error=f"Unable to retrieve data for {symbol}.")
-#     if chart_data.get("error"):
-#         return render_template("stock_details.html", stock=stock_data, symbol=symbol, error=chart_data["error"])
-
-#     plotly_chart_json = create_stock_chart(chart_data)
-
-#     return render_template("stock_details.html", stock=stock_data, chart_json=plotly_chart_json, symbol=symbol)
 import plotly.graph_objs as go
 import plotly.io as pio
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, render_template, request
 from flask_login import login_required
-from app.utils.stock_chart import fetch_stock_details
+from app.utils.stock_chart import fetch_stock_details, fetch_stock_history
 
 stock_details_bp = Blueprint('stock_details', __name__)
 
@@ -114,6 +72,23 @@ def create_gauge_chart(stock_data):
 
     return pio.to_json(fig)
 
+def create_historical_chart(chart_data, time_period):
+    """Creates a line chart for stock price history (weekly or monthly)."""
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=chart_data["labels"],
+        y=chart_data["prices"],
+        mode='lines',
+        name=f'{time_period.capitalize()} Stock Price'
+    ))
+    fig.update_layout(
+        title=f"{time_period.capitalize()} Stock Price Trend",
+        xaxis_title="Date",
+        yaxis_title="Price (USD)",
+        template="plotly_dark"
+    )
+    return pio.to_json(fig)
+
 @stock_details_bp.route('/stock/<symbol>', methods=['GET'])
 @login_required
 def stock_details(symbol):
@@ -122,9 +97,17 @@ def stock_details(symbol):
     if stock_data.get("error"):
         return render_template("stock_details.html", error=f"Unable to retrieve data for {symbol}.")
 
+    time_period = request.args.get("time_period", "week")  
+    historical_data = fetch_stock_history(symbol, time_period)
+
+    if historical_data.get("error"):
+        return render_template("stock_details.html", stock=stock_data, symbol=symbol, error=historical_data["error"])
+
     line_chart_json = create_stock_chart(stock_data)
     bar_chart_json = create_price_comparison_chart(stock_data)
     gauge_chart_json = create_gauge_chart(stock_data)
+    historical_chart_json = create_historical_chart(historical_data, time_period)
+
 
     return render_template(
         "stock_details.html",
@@ -132,5 +115,7 @@ def stock_details(symbol):
         line_chart_json=line_chart_json,
         bar_chart_json=bar_chart_json,
         gauge_chart_json=gauge_chart_json,
-        symbol=symbol
+        symbol=symbol,
+        historical_chart_json=historical_chart_json,
+        time_period=time_period
     )

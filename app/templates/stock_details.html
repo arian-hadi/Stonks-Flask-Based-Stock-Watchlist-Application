@@ -44,6 +44,13 @@
 					<h2 class="text-xl text-white font-semibold">Stock Price Change (%)</h2>
 					<div id="gaugeChart"></div>
 				</div>
+
+				<div class="mt-6">
+					<h2 class="text-xl font-semibold text-white">Historical Stock Price Trend</h2>
+					<a href="?time_period=week" class="text-blue-400 underline">Weekly</a> |
+					<a href="?time_period=month" class="text-blue-400 underline">Monthly</a>
+					<div id="historical_chart"></div>
+				</div>
 			{% endif %}
 		</div>
 		<a href="{{ url_for('watchlist.watchlist') }}">Back to Watchlist</a>
@@ -54,10 +61,12 @@
 			var lineChart = JSON.parse('{{ line_chart_json | safe }}');
 			var barChart = JSON.parse('{{ bar_chart_json | safe }}');
 			var gaugeChart = JSON.parse('{{ gauge_chart_json | safe }}');
+			var historicalData =JSON.parse('{{ historical_chart_json | safe }}');
 		
 			Plotly.newPlot('lineChart', lineChart.data, lineChart.layout);
 			Plotly.newPlot('barChart', barChart.data, barChart.layout);
 			Plotly.newPlot('gaugeChart', gaugeChart.data, gaugeChart.layout);
+			Plotly.newPlot('historical_chart', historicalData.data, historicalData.layout);
 		</script>
 		
 
