@@ -18,15 +18,15 @@
 			{% else %}
 				<!-- Stock Price Info -->
 				<div class="grid grid-cols-2 gap-4 bg-gray-800 p-4 rounded-lg">
-					<p class="text-lg text-white">Current Price: <span class="font-bold">${{ stock.current_price }}</span></p>
-					<p class="text-lg text-white">Change: <span class="font-bold {% if stock.change < 0 %} text-red-500 {% else %} text-green-500 {% endif %}">${{ stock.change }}</span></p>
-					<p class="text-lg text-white">Percentage Change: <span class="font-bold {% if stock.percent_change < 0 %} text-red-500 {% else %} text-green-500 {% endif %}">{{ stock.percent_change }}%</span></p>
+					<p class="text-lg text-white">Current Price: <span class="font-bold">${{ stock.price }}</span></p>
+					<p class="text-lg text-white">Change: <span class="font-bold {% if stock.change_amount < 0 %} text-red-500 {% else %} text-green-500 {% endif %}">${{ stock.change_amount }}</span></p>
+					<p class="text-lg text-white">Percentage Change: <span class="font-bold {% if stock.change_percent < 0 %} text-red-500 {% else %} text-green-500 {% endif %}">{{ stock.change_percent }}%</span></p>
 					<p class="text-lg text-white">Open: <span class="font-bold">${{ stock.open }}</span></p>
 					<p class="text-lg text-white">High: <span class="font-bold">${{ stock.high }}</span></p>
 					<p class="text-lg text-white">Low: <span class="font-bold">${{ stock.low }}</span></p>
 					<p class="text-lg text-white">Previous Close: <span class="font-bold">${{ stock.previous_close }}</span></p>
 				</div>
-		
+			
 				<div class="mt-6">
 					<h2 class="text-xl font-semibold text-white">Historical Stock Price Trend</h2>
 					<a href="?time_period=week" class="text-blue-400 underline">Weekly</a> |
@@ -34,13 +34,12 @@
 					<div id="historical_chart"></div>
 				</div>
 			
-		
 				<!-- Stock Price Comparison -->
 				<div class="bg-gray-900 p-6 rounded-lg mt-6">
 					<h2 class="text-xl text-white font-semibold">Stock Price Comparison</h2>
 					<div id="barChart"></div>
 				</div>
-		
+			
 				<!-- Price Change Gauge -->
 				<div class="bg-gray-900 p-6 rounded-lg mt-6">
 					<h2 class="text-xl text-white font-semibold">Stock Price Change (%)</h2>

@@ -2,29 +2,30 @@ import plotly.graph_objs as go
 import plotly.io as pio
 from flask import Blueprint, render_template, request
 from flask_login import login_required
-from app.utils.stock_chart import fetch_stock_details, fetch_stock_history
+from app.utils.stock_chart import fetch_stock_history
+from app.utils.finnhub_utils import get_all_stock_quotes, get_stock_quote
 
 stock_details_bp = Blueprint('stock_details', __name__)
 
-def create_stock_chart(stock_data):
-    fig = go.Figure()
+# def create_stock_chart(stock_data):
+#     fig = go.Figure()
     
-    # Line Chart (Real-time stock price trend)
-    fig.add_trace(go.Scatter(
-        x=["Now"],  # Only current time available in free API
-        y=[stock_data["current_price"]],
-        mode='lines+markers',
-        name='Stock Price'
-    ))
+#     # Line Chart (Real-time stock price trend)
+#     fig.add_trace(go.Scatter(
+#         x=["Now"],  # Only current time available in free API
+#         y=[stock_data["current_price"]],
+#         mode='lines+markers',
+#         name='Stock Price'
+#     ))
 
-    fig.update_layout(
-        title="Real-Time Stock Price Trend",
-        xaxis_title="Time",
-        yaxis_title="Price (USD)",
-        template="plotly_dark"
-    )
+#     fig.update_layout(
+#         title="Real-Time Stock Price Trend",
+#         xaxis_title="Time",
+#         yaxis_title="Price (USD)",
+#         template="plotly_dark"
+#     )
 
-    return pio.to_json(fig)
+#     return pio.to_json(fig)
 
 def create_price_comparison_chart(stock_data):
     fig = go.Figure()
@@ -55,7 +56,7 @@ def create_gauge_chart(stock_data):
     # Gauge Chart (Price change percentage)
     fig.add_trace(go.Indicator(
         mode="gauge+number+delta",
-        value=stock_data["percent_change"],
+        value=stock_data["change_percent"],
         title={"text": "Price Change (%)"},
         delta={"reference": 0},
         gauge={
@@ -92,7 +93,7 @@ def create_historical_chart(chart_data, time_period):
 @stock_details_bp.route('/stock/<symbol>', methods=['GET'])
 @login_required
 def stock_details(symbol):
-    stock_data = fetch_stock_details(symbol)
+    stock_data = get_stock_quote(symbol, rounded=False)
     
     if stock_data.get("error"):
         return render_template("stock_details.html", error=f"Unable to retrieve data for {symbol}.")
@@ -103,7 +104,7 @@ def stock_details(symbol):
     if historical_data.get("error"):
         return render_template("stock_details.html", stock=stock_data, symbol=symbol, error=historical_data["error"])
 
-    line_chart_json = create_stock_chart(stock_data)
+    #line_chart_json = create_stock_chart(stock_data)
     bar_chart_json = create_price_comparison_chart(stock_data)
     gauge_chart_json = create_gauge_chart(stock_data)
     historical_chart_json = create_historical_chart(historical_data, time_period)
@@ -112,7 +113,7 @@ def stock_details(symbol):
     return render_template(
         "stock_details.html",
         stock=stock_data,
-        line_chart_json=line_chart_json,
+        #line_chart_json=line_chart_json,
         bar_chart_json=bar_chart_json,
         gauge_chart_json=gauge_chart_json,
         symbol=symbol,
