@@ -22,7 +22,17 @@ class Stock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     symbol = db.Column(db.String(10), nullable=False, unique=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    is_global = db.Column(db.Boolean, default=False)
 
     __table_args__ = (
         db.UniqueConstraint('symbol', 'user_id', name='unique_stock_per_user'),
     )
+
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    stock_symbol = db.Column(db.String(10), nullable=False)
+    last_notified = db.Column(db.DateTime, default=None)
+    user = db.relationship('User', backref=db.backref('notifications', lazy=True))
+    

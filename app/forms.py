@@ -26,3 +26,12 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=64)])
     confirm = PasswordField('Verify password', validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
     submit = SubmitField('Sign Up')
+
+
+class DeleteStockForm(FlaskForm):
+    submit = SubmitField("Remove")
+
+
+class AddStockForm(FlaskForm):
+    submit = SubmitField("Add to my stocks")
+
