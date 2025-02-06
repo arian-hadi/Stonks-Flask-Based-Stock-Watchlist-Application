@@ -1,62 +1,15 @@
-# from flask import Blueprint, render_template, redirect, url_for
-# from app.extension import db
-# from app.forms import StockForm
-# from app.models import Stock
-# from flask_login import login_required,current_user
-# from app.utils.finnhub_utils import get_stock_quote
-
-# watchlist_bp = Blueprint('watchlist', __name__)
-# @watchlist_bp.route('/', methods=['GET', 'POST'])
-# @login_required
-# def watchlist():
-#     form = StockForm()
-#     error = None
-
-#     # Handle form submission for adding a stock
-#     if form.validate_on_submit():
-#         new_stock = form.stock.data.upper()
-#         if new_stock:
-#             # Check if the stock is already in the user's watchlist
-#             existing_stock = Stock.query.filter_by(symbol=new_stock, user_id=current_user.id).first()
-#             if not existing_stock:
-#                 # Add stock to the user's watchlist
-#                 stock = Stock(symbol=new_stock, user_id=current_user.id, is_global=False)  # User-specific stock
-#                 db.session.add(stock)
-#                 db.session.commit()
-#         return redirect(url_for('watchlist.watchlist'))
-
-#     # Retrieve the user's watchlist (user-specific stocks)
-#     user_stocks = Stock.query.filter_by(user_id=current_user.id, is_global=False).all()
-
-#     # Retrieve global stocks (predefined stocks for all users)
-#     global_stocks = Stock.query.filter_by(is_global=True).all()
-
-#     # Retrieve stock data for both user and global stocks
-#     user_stock_data = [get_stock_quote(stock.symbol) for stock in user_stocks]
-#     global_stock_data = [get_stock_quote(stock.symbol) for stock in global_stocks]
-
-#     # Check for errors in retrieving stock data
-#     if any(stock.get("error") for stock in user_stock_data + global_stock_data):
-#         error = "Some stocks couldn't be retrieved. Please try again later."
-
-#     return render_template(
-#         "watchlist.html",
-#         form=form,
-#         stocks=user_stock_data,
-#         user_stocks=user_stocks,
-#         global_stocks=global_stock_data,
-#         username=current_user.username,
-#         error=error
-#     )
-
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, current_app
 from app.extension import db
 from app.forms import AddStockForm, DeleteStockForm
-from app.models import Stock
+from app.models import Stock, Notification, User
 from flask_login import login_required,current_user
-from app.utils.finnhub_utils import get_all_stock_quotes
+from app.utils.finnhub_utils import get_all_stock_quotes, get_stock_quote
+from app.extension import scheduler
+from app.utils.email import send_report,is_valid_email
+from apscheduler.triggers.cron import CronTrigger
 
 watchlist_bp = Blueprint('watchlist', __name__)
+
 @watchlist_bp.route('/', methods=['GET'])
 @login_required
 def watchlist():
@@ -70,6 +23,7 @@ def watchlist():
 
     add_form = AddStockForm()
     delete_form = DeleteStockForm()
+    
     return render_template(
         "watchlist.html",
         stocks=stock_data,  
@@ -89,6 +43,11 @@ def add_stock(symbol):
         if not Stock.query.filter_by(symbol=symbol, user_id=current_user.id).first():
             db.session.add(Stock(symbol=symbol, user_id=current_user.id))
             db.session.commit()
+
+            new_notification = Notification(user_id=current_user.id, stock_symbol=symbol, last_notified=None)
+            db.session.add(new_notification)
+            db.session.commit()
+
     return redirect(url_for('watchlist.watchlist'))
 
 @watchlist_bp.route('/remove/<symbol>', methods=['POST'])
@@ -101,4 +60,44 @@ def remove_stock(symbol):
         if stock:
             db.session.delete(stock)
             db.session.commit()
+
+            notification = Notification.query.filter_by(user_id=current_user.id, stock_symbol=symbol).first()
+            if notification:
+                db.session.delete(notification)
+                db.session.commit()
+
     return redirect(url_for('watchlist.watchlist'))
+
+
+# def daily_stock_report(app):
+#     """Send daily stock performance report to all users."""
+#     with app.app_context():
+#         users = User.query.all()
+#         for user in users:
+#             user_stocks = Stock.query.filter_by(user_id=user.id).all()
+#             stock_report = ""
+#             for stock in user_stocks:
+#                 stock_data = get_stock_quote(stock.symbol)
+#                 stock_report += f"{stock.symbol}: ${stock_data['price']} ({stock_data['change_percent']}%)\n"
+#             send_report(user.email, stock_report)
+
+def daily_stock_report(app):
+    """Send daily stock performance report to all users, skipping invalid emails and avoiding unnecessary API calls."""
+    with app.app_context():
+        users = User.query.all()
+        for user in users:
+            if not is_valid_email(user.email):
+                print(f"Skipping invalid email: {user.email}")
+                continue  # Skip this user if their email is invalid
+
+            user_stocks = Stock.query.filter_by(user_id=user.id).all()
+            if not user_stocks:
+                print(f"No stocks in watchlist for user: {user.email}")
+                continue  # Skip API calls if user has no stocks
+
+            stock_report = ""
+            for stock in user_stocks:
+                stock_data = get_stock_quote(stock.symbol)
+                stock_report += f"{stock.symbol}: ${stock_data['price']} ({stock_data['change_percent']}%)\n"
+
+            send_report(user.email, stock_report)

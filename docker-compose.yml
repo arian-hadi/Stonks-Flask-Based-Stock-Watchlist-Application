@@ -1,0 +1,76 @@
+# version: '3.8'
+
+# services:
+#   web:
+#     build: .
+#     container_name: flask_app
+#     ports:
+#       - "5000:5000"
+#     environment:
+#       - CELERY_BROKER_URL=redis://redis:6379/0
+#       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+#     depends_on:
+#       - redis
+#       - db
+#     command: ["poetry", "run", "flask", "run", "--host=0.0.0.0"]
+#     restart: always
+
+#   redis:
+#     image: "redis:latest"
+#     container_name: redis
+#     ports:
+#       - "6379:6379"
+#     restart: always
+
+#   celery:
+#     build: .
+#     container_name: celery_worker
+#     depends_on:
+#       - web
+#       - redis
+#       - db
+#     environment:
+#       - CELERY_BROKER_URL=redis://redis:6379/0
+#       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+#       - DATABASE_URL=postgresql://stonks:Cybertron_2541@db/stonks
+#     command: ["poetry", "run", "celery", "-A", "app", "worker", "--loglevel=info"]
+#     restart: always
+
+#   db:
+#     image: postgres:latest
+#     container_name: postgres_db
+#     environment:
+#       POSTGRES_USER: stonks
+#       POSTGRES_PASSWORD: Cybertron_2541
+#       POSTGRES_DB: stonks
+#     ports:
+#       - "5432:5432"
+#     restart: always
+
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      FLASK_DEBUG: 1
+      FLASK_APP: run.py
+      FLASK_ENV: development
+      PYTHONWARNINGS: "ignore::DeprecationWarning"
+    command: poetry run flask run --host=0.0.0.0
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: stonks
+      POSTGRES_PASSWORD: Cybertron_2541
+      POSTGRES_DB: stonks
+  
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"

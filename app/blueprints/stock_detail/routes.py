@@ -2,7 +2,7 @@ import plotly.graph_objs as go
 import plotly.io as pio
 from flask import Blueprint, render_template, request
 from flask_login import login_required
-from app.utils.stock_chart import fetch_stock_history
+from app.utils.alpha_vintage import fetch_stock_history
 from app.utils.finnhub_utils import get_all_stock_quotes, get_stock_quote
 
 stock_details_bp = Blueprint('stock_details', __name__)

@@ -18,6 +18,7 @@
 			{% else %}
 				<!-- Stock Price Info -->
 				<div class="grid grid-cols-2 gap-4 bg-gray-800 p-4 rounded-lg">
+					<h1 class = "text-lg text-white">Stock Details: {{ stock.symbol }}</h1>
 					<p class="text-lg text-white">Current Price: <span class="font-bold">${{ stock.price }}</span></p>
 					<p class="text-lg text-white">Change: <span class="font-bold {% if stock.change_amount < 0 %} text-red-500 {% else %} text-green-500 {% endif %}">${{ stock.change_amount }}</span></p>
 					<p class="text-lg text-white">Percentage Change: <span class="font-bold {% if stock.change_percent < 0 %} text-red-500 {% else %} text-green-500 {% endif %}">{{ stock.change_percent }}%</span></p>

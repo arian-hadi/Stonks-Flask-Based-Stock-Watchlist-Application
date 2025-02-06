@@ -5,6 +5,7 @@ description = ""
 authors = ["Arian Hadi <arianhadi2003@gmail.com>"]
 readme = "README.md"
 
+
 [tool.poetry.dependencies]
 python = "^3.12"
 flask = "^3.1.0"
@@ -20,8 +21,19 @@ flask-bcrypt = "^1.0.1"
 email-validator = "^2.2.0"
 finnhub-python = "^2.4.22"
 plotly = "^6.0.0"
+flask-mail = "^0.10.0"
+celery = "^5.4.0"
+redis = "^5.2.1"
+six = "^1.17.0"
+apscheduler = "^3.11.0"
 
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+
+packages = [
+    { include = "flask-project" },  # Replace "app" with your actual project folder name
+    { include = "utils" }
+]

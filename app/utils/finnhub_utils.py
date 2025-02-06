@@ -52,5 +52,3 @@ def get_all_stock_quotes():
         stock_data[symbol] = get_stock_quote(symbol, rounded=True)
 
     return stock_data
-
-
