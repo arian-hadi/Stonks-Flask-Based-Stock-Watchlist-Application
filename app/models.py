@@ -1,6 +1,8 @@
 from app.extension import db
 from flask_login import UserMixin
 from flask_bcrypt import Bcrypt
+from itsdangerous import URLSafeTimedSerializer
+from flask import current_app
 
 bcrypt = Bcrypt()
 
@@ -10,6 +12,9 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     watchlist = db.relationship('Stock', backref='owner', lazy=True)
     password_hash = db.Column(db.String(255), nullable=False)
+    reset_token = db.Column(db.String(255), nullable=True)  
+    reset_token_expiry = db.Column(db.DateTime, nullable=True) 
+    
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -17,6 +22,18 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
 
+    def generate_reset_token(self):
+        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        return s.dumps(self.email, salt='password-reset-salt')
+
+    @staticmethod
+    def verify_reset_token(token, expiration=3600):
+        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        try:
+            email = s.loads(token, salt='password-reset-salt', max_age=expiration)
+        except:
+            return None
+        return User.query.filter_by(email=email).first()
 
 class Stock(db.Model):
     id = db.Column(db.Integer, primary_key=True)

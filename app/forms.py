@@ -28,10 +28,21 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Sign Up')
 
 
+class ForgotPasswordForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Send Reset Link')
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('New Password', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Reset Password')
+
+
 class DeleteStockForm(FlaskForm):
     submit = SubmitField("Remove")
 
 
 class AddStockForm(FlaskForm):
     submit = SubmitField("Add to my stocks")
+
 

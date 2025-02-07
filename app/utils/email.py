@@ -2,6 +2,7 @@ from app.extension import mail
 from flask_mail import Message
 from smtplib import SMTPException
 import re
+from app.config import Config
 
 
 def is_valid_email(email):
@@ -25,3 +26,12 @@ def send_report(email, stock_report):
             print(f"Invalid email skipped: {email}")
             return  # Ignore this error and stop further action
         print(f"Email sending failed for {email}: {e}")
+
+
+def send_reset_email(to_email, reset_url):
+    mail_username = Config.MAIL_USERNAME
+    msg = Message("Password Reset Request",
+                  sender=mail_username,
+                  recipients=[to_email])
+    msg.body = f"Click the link to reset your password: {reset_url}\nThis link expires in 1 hour."
+    mail.send(msg)
