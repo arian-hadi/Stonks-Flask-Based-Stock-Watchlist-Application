@@ -1,78 +1,77 @@
 {% extends "base.html" %}
-{% set body_class = "bg-gray-100 flex items-center justify-center h-screen" %}
+{% block body_attrs %}{% endblock %}
+
 
 {% block title %} Login {% endblock %}
 
 {% block content %}
+    <section class="w-full h-screen flex items-stretch text-white">
+        <div class="lg:flex w-1/2 hidden bg-gray-500 bg-no-repeat bg-cover relative items-center" style="background-image: url(https://img.freepik.com/free-photo/screen-showing-data-about-financial-crisis-because-coronavirus_181624-59374.jpg?t=st=1738968103~exp=1738971703~hmac=3179362136c60877ceb4f203b52c4a6adce0626497ff182f9206cabce3229dff&w=1380);">
+            <div class="absolute bg-black opacity-60 inset-0 z-0"></div>
+            <div class="w-full px-24 z-10">
+                <h1 class="text-5xl font-bold text-left tracking-wide">Keep it special</h1>
+                <p class="text-3xl my-4">Stay ahead. Sign in to your watchlist!</p>
+            </div>
 
-<div class="container mx-auto mt-10 max-w-md bg-white p-6 rounded-lg shadow-lg">
-    <h2 class="text-2xl text-black font-semibold mb-6 text-center">Login</h2>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <div id="flash-messages" class="mb-4">
-            {% for category, message in messages %}
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-2 rounded">
-                    {{ message }}
+        </div>
+        <div class="lg:w-1/2 w-full flex items-center justify-center text-center md:px-16 px-0 z-0" style="background-color: #161616;">
+            <div class="absolute lg:hidden z-10 inset-0 bg-gray-500 bg-no-repeat bg-cover items-center" style="background-image: url(https://img.freepik.com/free-photo/screen-showing-data-about-financial-crisis-because-coronavirus_181624-59374.jpg?t=st=1738968103~exp=1738971703~hmac=3179362136c60877ceb4f203b52c4a6adce0626497ff182f9206cabce3229dff&w=1380);">
+                <div class="absolute bg-black opacity-60 inset-0 z-0"></div>
+            </div>
+            <div class="w-full py-6 z-20">
+                <h1 class="my-6">
+                    <svg viewBox="0 0 247 31" class="w-auto h-7 sm:h-8 inline-flex"><!-- ... SVG path data ... --></svg>
+                </h1>
+                <div class="py-6 space-x-2">
+                    <h1 class="text-5xl font-bold  tracking-wide">Login</h1>
                 </div>
-            {% endfor %}
+                <p class="text-gray-100">or use email your account</p>
+                <form method="POST" action="{{ url_for('auth.login') }}" class="sm:w-2/3 w-full px-4 lg:px-0 mx-auto">
+                    {{ form.hidden_tag() }}  <!-- CSRF Token -->
+
+                    <div class="pb-2 pt-4">
+                        {{ form.email(class="block w-full p-4 text-lg rounded-md bg-black text-white placeholder-gray-500", placeholder="Email") }}
+                        {% if form.email.errors %}
+                            <div class="text-red-500 text-sm mt-1">
+                                {% for error in form.email.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pb-2 pt-4">
+                        {{ form.password(class="block w-full p-4 text-lg rounded-md bg-black text-white placeholder-gray-500", placeholder="Password") }}
+                        {% if form.password.errors %}
+                            <div class="text-red-500 text-sm mt-1">
+                                {% for error in form.password.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex items-center justify-between text-gray-400 text-sm">
+                        <div class="flex items-center">
+                            {{ form.remember_me(class="h-4 w-4 text-indigo-500 focus:ring-indigo-400 border-gray-300 rounded") }}
+                            {{ form.remember_me.label(class="ml-2 block") }}
+                        </div>
+                        <a href="{{ url_for('auth.forgot_password') }}" class="hover:underline hover:text-gray-100">Forgot your password?</a>
+                    </div>
+
+                    <div class="px-4 pb-2 pt-4">
+                        <button type="submit" class="uppercase block w-full p-4 text-lg rounded-full bg-indigo-500 hover:bg-indigo-600 focus:outline-none">
+                            {{ form.submit.label.text }}
+                        </button>
+                    </div>
+                    <div class="mt-2 text-sm text-center"></div>
+                        <p>
+                            Don't have an account? <a href="{{ url_for('auth.register') }}" class="hover:underline  text-blue-500 hover:text-blue-300">Sign up here</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
         </div>
-
-        <script>
-            // Remove flash messages after 3 seconds
-            setTimeout(function() {
-                document.getElementById("flash-messages").style.display = "none";
-            }, 3000);
-        </script>
-    {% endif %}
-{% endwith %}
-
-
-    <form method="POST" action="{{ url_for('auth.login') }}">
-        {{ form.hidden_tag() }}  <!-- CSRF Token -->
-
-        <div class="mb-4">
-            {{ form.email.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.email(class="block w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-indigo-200") }}
-            {% if form.email.errors %}
-                <div class="text-red-500 text-sm mt-1">
-                    {% for error in form.email.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="mb-4">
-            {{ form.password.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.password(class="block w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-indigo-200") }}
-            {% if form.password.errors %}
-                <div class="text-red-500 text-sm mt-1">
-                    {% for error in form.password.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="flex items-center mb-4">
-            {{ form.remember_me(class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded") }}
-            {{ form.remember_me.label(class="ml-2 block text-sm text-gray-900") }}
-        </div>
-
-        <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-indigo-300">
-            {{ form.submit.label.text }}
-        </button>
-    </form>
-
-    <p class="mt-4 text-sm text-gray-600 text-center">
-        <a href="{{ url_for('auth.forgot_password') }}" class="text-indigo-600 hover:underline">Forgot your password?</a>
-    </p>
-    <p class="mt-2 text-sm text-gray-600 text-center">
-        Don't have an account? <a href="{{ url_for('auth.register') }}" class="text-indigo-600 hover:underline">Sign up here</a>
-    </p>
-</div>
-
-</body>
+    </section>
 
 {% endblock %}

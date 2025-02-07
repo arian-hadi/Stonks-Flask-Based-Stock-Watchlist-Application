@@ -1,17 +1,15 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from .models import *
 
 
 
-#watchlist form
 class StockForm(FlaskForm):
     stock = StringField("Stock", validators=[DataRequired()])
     submit = SubmitField("Add Stock")
 
 
-#Authenticating forms
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -26,6 +24,15 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=64)])
     confirm = PasswordField('Verify password', validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
     submit = SubmitField('Sign Up')
+
+    def validate_username(self, field):
+        if User.query.filter_by(username=field.data).first():
+            raise ValidationError("This username is already taken.")
+
+    # Custom validation to check if email is already registered
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first():
+            raise ValidationError("This email is already registered.")
 
 
 class ForgotPasswordForm(FlaskForm):

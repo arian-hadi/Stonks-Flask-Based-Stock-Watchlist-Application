@@ -14,34 +14,47 @@ def login():
     form = LoginForm(request.form)
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user)
-            return redirect(url_for('watchlist.watchlist'))
-        flash('Invalid username or password', 'danger')
+
+        if user is None or not user.check_password(form.password.data):
+            form.password.errors.append("Invalid password")  # Show error under password field
+            return render_template('auth/login.html', form=form)
+
+        login_user(user)
+        return redirect(url_for('watchlist.watchlist'))
+
     return render_template('auth/login.html', form=form)
+
 
 
 @auth_bp.route('/signup', methods=["GET", "POST"])
 def register():
-    form = RegisterForm(request.form)
-    if form.validate_on_submit():
+    form = RegisterForm()
 
+    if form.validate_on_submit():
+        # Check if the username or email is already taken
         existing_user = User.query.filter(
             (User.username == form.username.data) | 
             (User.email == form.email.data)
         ).first()
+
         if existing_user:
-            flash('Username or email already taken. Please choose another.', 'warning')
-            return render_template('auth/signup.html', form=form)
-        
- 
+            if existing_user.username == form.username.data:
+                form.username.errors.append("This username is already taken.")
+            if existing_user.email == form.email.data:
+                form.email.errors.append("This email is already registered.")
+            return render_template('auth/signup.html', form=form)  # Return form with errors
+
+        # Create new user
         user = User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
+
         flash('Registration successful. Please log in.', 'success')
         return redirect(url_for('auth.login'))
+
     return render_template('auth/signup.html', form=form)
+
 
 
 @auth_bp.route('/logout')
