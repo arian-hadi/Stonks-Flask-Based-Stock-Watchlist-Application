@@ -11,6 +11,14 @@
 <body>
 <div class="max-w-4xl mx-auto mt-10">
     <h1 class="text-2xl font-bold text-center mb-6">Stock Watchlist</h1>
+    
+    <div class="absolute top-0 right-0 p-4">
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('auth.logout') }}" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                Logout
+            </a>
+        {% endif %}
+    </div>
 
     <!-- Available Stocks Section -->
     <div class="bg-gray-100 p-5 rounded-lg shadow-lg mb-6">

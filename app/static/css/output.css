@@ -2147,6 +2147,14 @@ input:user-invalid, textarea:user-invalid, select:user-invalid {
   top: 0.5rem;
 }
 
+.right-0 {
+  right: 0px;
+}
+
+.top-0 {
+  top: 0px;
+}
+
 .-z-20 {
   z-index: -20;
 }

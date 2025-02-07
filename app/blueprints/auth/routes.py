@@ -49,7 +49,7 @@ def register():
 def logout():
     logout_user()
     flash('You have been logged out.', 'info')
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('main_bp.homepage'))  # Use 'main_bp.homepage' to reference the Blueprint route
 
 
 @auth_bp.route('/forgot-password', methods=['GET', 'POST'])
