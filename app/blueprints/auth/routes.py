@@ -25,7 +25,7 @@ def login():
 def register():
     form = RegisterForm(request.form)
     if form.validate_on_submit():
-        # Check if username or email already exists
+
         existing_user = User.query.filter(
             (User.username == form.username.data) | 
             (User.email == form.email.data)
@@ -34,7 +34,7 @@ def register():
             flash('Username or email already taken. Please choose another.', 'warning')
             return render_template('auth/signup.html', form=form)
         
-        # Create and save the new user
+ 
         user = User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
@@ -68,7 +68,7 @@ def forgot_password():
             send_reset_email(user.email, reset_url)
 
             flash("An email has been sent with instructions to reset your password.", "success")
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.forgot_password_sent'))
         else:
             flash("No account found with this email.", "danger")
 
@@ -80,7 +80,7 @@ def reset_password(token):
     user = User.verify_reset_token(token)
     if not user or user.reset_token_expiry.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
         flash("Invalid or expired token.", "danger")
-        return redirect(url_for('forgot_password'))
+        return redirect(url_for('auth.reset_password_failed')) 
 
     form = ResetPasswordForm()
     if form.validate_on_submit():
@@ -90,7 +90,19 @@ def reset_password(token):
         db.session.commit()
 
         flash("Your password has been reset! You can now log in.", "success")
-        return redirect(url_for('auth.login'))
+        return redirect(url_for('auth.reset_password_success'))
 
     return render_template('auth/reset_password.html', form=form)
 
+
+@auth_bp.route('/forgot-password-sent')
+def forgot_password_sent():
+    return render_template('auth/forgot_password_sent.html')
+
+@auth_bp.route('/reset-password-success')
+def reset_password_success():
+    return render_template('auth/reset_password_success.html')
+
+@auth_bp.route('/reset-password-failed')
+def reset_password_failed():
+    return render_template('auth/reset_password_failed.html')

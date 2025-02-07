@@ -27,7 +27,7 @@ def create_app():
             id='daily_stock_report',
             func=daily_stock_report,
             args=[app],  # Pass the app instance
-            trigger=CronTrigger(minute=1),
+            trigger=CronTrigger(hour = 23),
             replace_existing=True
         )    
 
