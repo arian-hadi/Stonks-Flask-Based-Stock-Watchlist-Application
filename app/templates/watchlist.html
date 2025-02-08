@@ -110,18 +110,27 @@
     document.getElementById('allStocksTab').addEventListener('click', function() {
         document.getElementById('allStocksContent').classList.remove('hidden');
         document.getElementById('watchlistContent').classList.add('hidden');
+        
         this.classList.add('bg-blue-500', 'text-white');
-        document.getElementById('watchlistTab').classList.remove('bg-blue-500', 'text-white');
-        document.getElementById('watchlistTab').classList.add('bg-gray-700');
+        this.classList.remove('bg-gray-700');
+        
+        const watchlistTab = document.getElementById('watchlistTab');
+        watchlistTab.classList.remove('bg-blue-500', 'text-white');
+        watchlistTab.classList.add('bg-gray-700');
     });
-    
+
     document.getElementById('watchlistTab').addEventListener('click', function() {
         document.getElementById('watchlistContent').classList.remove('hidden');
         document.getElementById('allStocksContent').classList.add('hidden');
+        
         this.classList.add('bg-blue-500', 'text-white');
-        document.getElementById('allStocksTab').classList.remove('bg-blue-500', 'text-white');
-        document.getElementById('allStocksTab').classList.add('bg-gray-700');
+        this.classList.remove('bg-gray-700');
+        
+        const allStocksTab = document.getElementById('allStocksTab');
+        allStocksTab.classList.remove('bg-blue-500', 'text-white');
+        allStocksTab.classList.add('bg-gray-700');
     });
+
 
     // Stock Search Functionality
     document.getElementById('searchStock').addEventListener('input', function() {
