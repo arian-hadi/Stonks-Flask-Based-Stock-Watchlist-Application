@@ -93,7 +93,7 @@ def create_historical_chart(chart_data, time_period):
 @stock_details_bp.route('/stock/<symbol>', methods=['GET'])
 @login_required
 def stock_details(symbol):
-    stock_data = get_stock_quote(symbol, rounded=False)
+    stock_data = get_stock_quote(symbol)
     
     if stock_data.get("error"):
         return render_template("stock_details.html", error=f"Unable to retrieve data for {symbol}.")
