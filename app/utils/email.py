@@ -10,12 +10,26 @@ def is_valid_email(email):
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
     return re.match(email_regex, email) is not None
 
+
 def send_report(email, stock_report):
     if not is_valid_email(email):
         return  # Skip invalid email without logging
 
-    subject = "Your Daily Stock Watchlist Report"
-    body = f"Hello,\n\nHere is your daily stock performance report:\n\n{stock_report}\n\nBest,\nStock Watch Team"
+    subject = "📈 Your Daily Stock Watchlist Report"
+    body = f"""
+Hello,
+
+Here’s your daily stock performance report:
+
+----------------------------------------
+{stock_report}
+----------------------------------------
+
+Stay informed and happy trading!
+
+Best regards,
+Stonks Team
+"""
 
     msg = Message(subject, recipients=[email], body=body)
     

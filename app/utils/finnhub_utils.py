@@ -7,7 +7,7 @@ from app.utils.stocks import STOCKS_DATA  # Import the stock list
 FINNHUB_API_KEY = os.getenv("FINNHUB_SECRET_KEY")
 FINNHUB_URL = "https://finnhub.io/api/v1/quote"
 
-# Cache storage (symbol -> (timestamp, data))
+
 stock_cache = {}
 CACHE_EXPIRY_TIME = 60  # Cache expiration time in seconds
 
@@ -61,3 +61,16 @@ def get_all_stock_quotes():
         stock_data[symbol] = get_stock_quote(symbol)
 
     return stock_data
+
+
+
+def search_stock(symbol):
+    """Search for a stock and return its latest data."""
+    symbol = symbol.upper()
+
+    # Check if stock is in the predefined list
+    if symbol in STOCKS_DATA["all_stocks"]:
+        return get_stock_quote(symbol)
+
+    # If not in predefined stocks, fetch from API
+    return get_stock_quote(symbol)

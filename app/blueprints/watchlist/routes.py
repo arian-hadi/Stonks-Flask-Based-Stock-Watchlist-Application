@@ -1,9 +1,9 @@
-from flask import Blueprint, render_template, redirect, url_for, current_app
+from flask import Blueprint, render_template, redirect, url_for, current_app, jsonify, request
 from app.extension import db
 from app.forms import AddStockForm, DeleteStockForm
 from app.models import Stock, Notification, User
 from flask_login import login_required,current_user
-from app.utils.finnhub_utils import get_all_stock_quotes, get_stock_quote
+from app.utils.finnhub_utils import get_all_stock_quotes, get_stock_quote, search_stock
 from app.extension import scheduler
 from app.utils.email import send_report,is_valid_email
 from apscheduler.triggers.cron import CronTrigger
@@ -82,22 +82,37 @@ def remove_stock(symbol):
 #             send_report(user.email, stock_report)
 
 def daily_stock_report(app):
-    """Send daily stock performance report to all users, skipping invalid emails and avoiding unnecessary API calls."""
     with app.app_context():
         users = User.query.all()
         for user in users:
             if not is_valid_email(user.email):
-                print(f"Skipping invalid email: {user.email}")
-                continue  # Skip this user if their email is invalid
+                continue
 
             user_stocks = Stock.query.filter_by(user_id=user.id).all()
             if not user_stocks:
-                print(f"No stocks in watchlist for user: {user.email}")
-                continue  # Skip API calls if user has no stocks
+                continue
 
-            stock_report = ""
+            stock_report = "Symbol   Price ($)   Change (%)   Change ($)   High   Low\n"
+            stock_report += "-" * 60 + "\n"
+
             for stock in user_stocks:
                 stock_data = get_stock_quote(stock.symbol)
-                stock_report += f"{stock.symbol}: ${stock_data['price']} ({stock_data['change_percent']}%)\n"
+                stock_report += (
+                    f"{stock.symbol:<8} {stock_data['price']:<10} {stock_data['change_percent']:<10}% "
+                    f"{stock_data['change_amount']:<10} {stock_data['high']:<6} {stock_data['low']:<6}\n"
+                )
 
             send_report(user.email, stock_report)
+
+
+@watchlist_bp.route('/search_stock', methods=['GET'])
+@login_required
+def search_stock_api():
+    """Search for stocks based on user input."""
+    query = request.args.get('q', '').strip()
+
+    if not query:
+        return jsonify([])  # Return empty list if query is empty
+
+    stock_results = search_stock(query)  # Get matching stocks
+    return jsonify(stock_results)

@@ -1,4 +1,3 @@
-<!-- File ./templates/watchlist.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,76 +6,111 @@
     <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
     <title>Watchlist</title>
 </head>
-
-<body>
-<div class="max-w-4xl mx-auto mt-10">
-    <h1 class="text-2xl font-bold text-center mb-6">Stock Watchlist</h1>
+<body class="bg-gray-900 text-white">
     
-    <div class="absolute top-0 right-0 p-4">
-        {% if current_user.is_authenticated %}
-            <a href="{{ url_for('auth.logout') }}" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-                Logout
-            </a>
-        {% endif %}
-    </div>
-
-    <!-- Available Stocks Section -->
-    <div class="bg-gray-100 p-5 rounded-lg shadow-lg mb-6">
-        <h2 class="text-xl font-semibold mb-3">Available Stocks</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {% for symbol, stock in stocks.items() %}
-            <div class="flex justify-between items-center bg-white p-3 rounded-lg shadow">
-                <div>
-                    <p class="font-medium">{{ stock.symbol }}</p>
-                    <p class="text-sm text-gray-500">Price: ${{ stock.price }}</p>
-                    <p class="text-sm text-gray-500">Change: {{ stock.change_percent }}%</p>
-                </div>
-
-                <Button type="submit" class="bg-green-500 text-white px-2 py-2 rounded hover:bg-green-600 inline-block text-center">
-                    <a href="{{ url_for('stock_details.stock_details', symbol=stock.symbol) }}"> 
-                        Detail
-                    </a>
-                </Button>
-
-                {% if stock.symbol in user_stocks %}
-                <!-- Remove Button Form -->
-                <form method="POST" action="{{ url_for('watchlist.remove_stock', symbol=stock.symbol) }}">
-                    {{ delete_form.hidden_tag() }}
-                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                        Remove
-                    </button>
-                </form>
-                {% else %}
-                <!-- Add Button Form -->
-                <form method="POST" action="{{ url_for('watchlist.add_stock', symbol=stock.symbol) }}">
-                    {{ add_form.hidden_tag() }}
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                        Add
-                    </button>
-                </form>
-                {% endif %}
-            </div>
-            {% endfor %}
+    <!-- Top Navigation -->
+    <div class="flex justify-between items-center p-4 bg-gray-800 shadow-lg">
+        <h1 class="text-2xl font-bold">Stock Watchlist</h1>
+        <div class="flex items-center space-x-4">
+            <span class="text-lg">Welcome, {{ current_user.username }}</span>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('auth.logout') }}" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                    Logout
+                </a>
+            {% endif %}
         </div>
     </div>
-
-    <!-- User's Watchlist Section -->
-    <div class="bg-gray-100 p-5 rounded-lg shadow-lg">
-        <h2 class="text-xl font-semibold mb-3">Your Watchlist</h2>
-        <ul>
-            {% for stock in user_stocks %}
-            <li class="flex justify-between items-center bg-white p-3 rounded-lg shadow mb-2">
-                <span class="font-medium">{{ stock }}</span>
-                <form method="POST" action="{{ url_for('watchlist.remove_stock', symbol=stock) }}">
-                    {{ delete_form.hidden_tag() }}
-                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                        Remove
-                    </button>
-                </form>
-            </li>
-            {% endfor %}
-        </ul>
+    
+    <div class="max-w-4xl mx-auto mt-6">
+        <input type="text" id="searchStock" placeholder="Search Stocks..." class="w-full p-2 mb-4 border rounded text-black">
+    
+        <div class="bg-gray-800 p-5 rounded-lg shadow-lg">
+            <div class="flex">
+                <button id="allStocksTab" class="tab-button bg-blue-500 text-white px-4 py-2 rounded-t-lg">All Stocks</button>
+                <button id="watchlistTab" class="tab-button bg-gray-700 px-4 py-2 rounded-t-lg">Your Watchlist</button>
+            </div>
+    
+            <div id="allStocksContent" class="tab-content p-4">
+                <h2 class="text-xl font-semibold mb-3">Available Stocks</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {% for symbol, stock in stocks.items() %}
+                    <div class="stock-item flex justify-between items-center bg-gray-700 p-3 rounded-lg shadow">
+                        <div>
+                            <p class="stock-symbol font-medium">{{ stock.symbol }}</p>
+                            <p class="text-sm text-gray-400">Price: ${{ stock.price }}</p>
+                            <p class="text-sm text-gray-400">Change: {{ stock.change_percent }}%</p>
+                        </div>
+    
+                        <a href="{{ url_for('stock_details.stock_details', symbol=stock.symbol) }}" class="bg-green-500 text-white px-2 py-2 rounded hover:bg-green-600">
+                            Detail
+                        </a>
+    
+                        {% if stock.symbol in user_stocks %}
+                        <form method="POST" action="{{ url_for('watchlist.remove_stock', symbol=stock.symbol) }}">
+                            {{ delete_form.hidden_tag() }}
+                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                                Remove
+                            </button>
+                        </form>
+                        {% else %}
+                        <form method="POST" action="{{ url_for('watchlist.add_stock', symbol=stock.symbol) }}">
+                            {{ add_form.hidden_tag() }}
+                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                                Add
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+    
+            <div id="watchlistContent" class="tab-content p-4 hidden">
+                <h2 class="text-xl font-semibold mb-3">Your Watchlist</h2>
+                <ul>
+                    {% for stock in user_stocks %}
+                    <li class="stock-item flex justify-between items-center bg-gray-700 p-3 rounded-lg shadow mb-2">
+                        <span class="stock-symbol font-medium">{{ stock }}</span>
+                        <form method="POST" action="{{ url_for('watchlist.remove_stock', symbol=stock) }}">
+                            {{ delete_form.hidden_tag() }}
+                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                                Remove
+                            </button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
     </div>
-</div>
+    
+    <script>
+    document.getElementById('allStocksTab').addEventListener('click', function() {
+        document.getElementById('allStocksContent').classList.remove('hidden');
+        document.getElementById('watchlistContent').classList.add('hidden');
+        this.classList.add('bg-blue-500', 'text-white');
+        document.getElementById('watchlistTab').classList.remove('bg-blue-500', 'text-white');
+        document.getElementById('watchlistTab').classList.add('bg-gray-700');
+    });
+    
+    document.getElementById('watchlistTab').addEventListener('click', function() {
+        document.getElementById('watchlistContent').classList.remove('hidden');
+        document.getElementById('allStocksContent').classList.add('hidden');
+        this.classList.add('bg-blue-500', 'text-white');
+        document.getElementById('allStocksTab').classList.remove('bg-blue-500', 'text-white');
+        document.getElementById('allStocksTab').classList.add('bg-gray-700');
+    });
+
+    document.getElementById('searchStock').addEventListener('input', function() {
+        let filter = this.value.toUpperCase();
+        let stockItems = document.querySelectorAll('.stock-item');
+        
+        stockItems.forEach(function(stock) {
+            let symbol = stock.querySelector('.stock-symbol').textContent.toUpperCase();
+            stock.style.display = symbol.includes(filter) ? "" : "none";
+        });
+    });
+    </script>
+    
 </body>
 </html>
