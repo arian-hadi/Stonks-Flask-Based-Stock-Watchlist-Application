@@ -8,6 +8,20 @@
 </head>
 <body class="bg-gray-900 text-white">
     
+    <!-- Notification Popup -->
+    <div id="notification" class="hidden fixed bottom-5 right-5 w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800" role="alert">
+        <div class="flex items-center">
+            <div id="notificationIcon" class="inline-flex items-center justify-center shrink-0 w-8 h-8 rounded-lg"></div>
+            <div id="notificationMessage" class="ms-3 text-sm font-normal"></div>
+            <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" aria-label="Close" onclick="document.getElementById('notification').classList.add('hidden')">
+                <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+
     <!-- Top Navigation -->
     <div class="flex justify-between items-center p-4 bg-gray-800 shadow-lg">
         <h1 class="text-2xl font-bold">Stock Watchlist</h1>
@@ -46,14 +60,14 @@
                         </a>
     
                         {% if stock.symbol in user_stocks %}
-                        <form method="POST" action="{{ url_for('watchlist.remove_stock', symbol=stock.symbol) }}">
+                        <form method="POST" action="{{ url_for('watchlist.remove_stock', symbol=stock.symbol) }}" class="stock-action-form">
                             {{ delete_form.hidden_tag() }}
                             <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
                                 Remove
                             </button>
                         </form>
                         {% else %}
-                        <form method="POST" action="{{ url_for('watchlist.add_stock', symbol=stock.symbol) }}">
+                        <form method="POST" action="{{ url_for('watchlist.add_stock', symbol=stock.symbol) }}" class="stock-action-form">
                             {{ add_form.hidden_tag() }}
                             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                                 Add
@@ -70,13 +84,20 @@
                 <ul>
                     {% for stock in user_stocks %}
                     <li class="stock-item flex justify-between items-center bg-gray-700 p-3 rounded-lg shadow mb-2">
-                        <span class="stock-symbol font-medium">{{ stock }}</span>
-                        <form method="POST" action="{{ url_for('watchlist.remove_stock', symbol=stock) }}">
-                            {{ delete_form.hidden_tag() }}
-                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                                Remove
-                            </button>
-                        </form>
+                        <div>
+                            <span class="stock-symbol font-medium">{{ stock }}</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <a href="{{ url_for('stock_details.stock_details', symbol=stock) }}" class="bg-green-500 text-white px-2 py-2 rounded hover:bg-green-600">
+                                Detail
+                            </a>
+                            <form method="POST" action="{{ url_for('watchlist.remove_stock', symbol=stock) }}" class="stock-action-form">
+                                {{ delete_form.hidden_tag() }}
+                                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                                    Remove
+                                </button>
+                            </form>
+                        </div>
                     </li>
                     {% endfor %}
                 </ul>
@@ -85,6 +106,7 @@
     </div>
     
     <script>
+    // Tab Switching Logic
     document.getElementById('allStocksTab').addEventListener('click', function() {
         document.getElementById('allStocksContent').classList.remove('hidden');
         document.getElementById('watchlistContent').classList.add('hidden');
@@ -101,6 +123,7 @@
         document.getElementById('allStocksTab').classList.add('bg-gray-700');
     });
 
+    // Stock Search Functionality
     document.getElementById('searchStock').addEventListener('input', function() {
         let filter = this.value.toUpperCase();
         let stockItems = document.querySelectorAll('.stock-item');
@@ -108,6 +131,36 @@
         stockItems.forEach(function(stock) {
             let symbol = stock.querySelector('.stock-symbol').textContent.toUpperCase();
             stock.style.display = symbol.includes(filter) ? "" : "none";
+        });
+    });
+
+    // Show notification when stock is added/removed
+        document.querySelectorAll('.stock-action-form').forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            let action = this.querySelector('button').textContent.trim();
+            let stockSymbol = this.closest('.stock-item').querySelector('.stock-symbol').textContent;
+            let message = action.includes("Remove") ? `Removed ${stockSymbol} from watchlist` : `Added ${stockSymbol} to watchlist`;
+
+            // Set icon based on action
+            let iconHTML = action.includes("Remove") ?
+                '<div class="text-red-500 bg-red-100 dark:bg-red-800 dark:text-red-200 w-8 h-8 flex items-center justify-center rounded-lg">' +
+                '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/></svg>' +
+                '</div>' :
+                '<div class="text-green-500 bg-green-100 dark:bg-green-800 dark:text-green-200 w-8 h-8 flex items-center justify-center rounded-lg">' +
+                '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/></svg>' +
+                '</div>';
+
+            // Show notification
+            document.getElementById('notificationIcon').innerHTML = iconHTML;
+            document.getElementById('notificationMessage').textContent = message;
+            let notification = document.getElementById('notification');
+            notification.classList.remove('hidden');
+
+            setTimeout(() => {
+                notification.classList.add('hidden');
+                this.submit(); // Submit after showing notification
+            }, 1500); // Delay submission slightly
         });
     });
     </script>
