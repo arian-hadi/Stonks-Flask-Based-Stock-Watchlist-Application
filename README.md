@@ -4,7 +4,7 @@ A **Flask-based stock tracking web application** that allows users to monitor st
 ## 🚀 Features  
 - **Stock Watchlist**: Add/remove stocks and track their performance.  
 - **Real-time Stock Data**: Uses **Finnhub & Alpha Vantage APIs**.  
-- **Stock Visualization**: Interactive **Plotly & Chart.js** charts.  
+- **Stock Visualization**: Interactive **Plotly** charts.  
 - **Automated Email Reports**: Daily stock summary via **Flask-Mail & APScheduler**.  
 - **Live Alerts**: Get notified when a stock price changes significantly.  
 - **User Authentication**: Secure login/logout using **Flask-Login & Flask-Bcrypt**.  
@@ -47,7 +47,6 @@ MAIL_USERNAME=your-email@gmail.com
 MAIL_PASSWORD=your-email-password
 MAIL_USE_TLS=True
 MAIL_USE_SSL=False
-REDIS_URL=redis://localhost:6379/0
 ```
 
 ### **4. Run Database Migrations**  
@@ -73,16 +72,6 @@ docker-compose up --build
 This will start:  
 - Flask app  
 - PostgreSQL  
-- Redis  
-- Celery worker  
-
-### **2. Running Celery Worker & Scheduler**  
-In a new terminal:  
-```bash
-docker exec -it stock-tracker-web celery -A app.celery worker --loglevel=info
-docker exec -it stock-tracker-web celery -A app.celery beat --loglevel=info
-```
-
 ---
 
 ## 📊 Stock Data Visualization  
@@ -101,8 +90,6 @@ docker exec -it stock-tracker-web celery -A app.celery beat --loglevel=info
 ## 📩 Automated Email System  
 - **Flask-Mail** sends emails to users.  
 - **APScheduler** schedules daily reports.  
-- **Celery & Redis** handle async tasks like stock alerts.  
-
 ---
 
 ## 📜 API Integration  
@@ -120,8 +107,6 @@ docker exec -it stock-tracker-web celery -A app.celery beat --loglevel=info
 | Chart.js      | Stock price charts              |  
 | Plotly        | Interactive stock data visualization |  
 | Flask-Mail    | Email notifications             |  
-| Celery        | Background task processing      |  
-| Redis         | Task queue for Celery           |  
 | APScheduler   | Scheduled jobs (daily reports)  |  
 | Docker        | Containerized deployment        |  
 
