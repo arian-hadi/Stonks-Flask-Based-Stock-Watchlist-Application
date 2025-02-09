@@ -5,8 +5,11 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    curl gcc libpq-dev build-essential \
+    curl gcc libpq-dev build-essential nodejs npm \
     && rm -rf /var/lib/apt/lists/*
+
+# Install TailwindCSS globally (optional)
+RUN npm install -g tailwindcss
 
 # Install Poetry
 ENV POETRY_VERSION=1.8.5
@@ -27,11 +30,14 @@ COPY . .
 
 # Set environment variables
 ENV FLASK_APP=run.py
-ENV FLASK_ENV=production
+ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
 ENV PYTHONWARNINGS="ignore::DeprecationWarning"
 
 # Expose Flask port
 EXPOSE 5000
 
 # Run the Flask application
-CMD ["python", "run.py"]
+CMD ["sh", "-c", "npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch & flask run --host=0.0.0.0 --reload"]
+
+

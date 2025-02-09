@@ -10,6 +10,8 @@ services:
       - "5000:5000"
     env_file:
       - .env
+    volumes:
+      - .:/app  # Mounts your local files so changes reflect instantly
     depends_on:
       - db
 
