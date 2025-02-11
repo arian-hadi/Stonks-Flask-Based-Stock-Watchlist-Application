@@ -6,3 +6,5 @@ const menuBtn = document.querySelector("#menu-btn");
 menuBtn.addEventListener("click", () => {
   mainHeader.dataset.state = mainHeader.dataset.state === "active" ? "closed" : "active";
 })
+
+

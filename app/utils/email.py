@@ -49,3 +49,23 @@ def send_reset_email(to_email, reset_url):
                   recipients=[to_email])
     msg.body = f"Click the link to reset your password: {reset_url}\nThis link expires in 1 hour."
     mail.send(msg)
+
+
+# In app/email.py
+from flask_mail import Message
+from app.extension import mail
+
+def send_otp_email(to_email, otp_code):
+    subject = "Your OTP for Account Verification"
+    body = f"""
+Hello,
+
+Your OTP for verifying your account is: {otp_code}
+
+This OTP will expire in 10 minutes.
+
+Best regards,
+Stonks Team
+    """
+    msg = Message(subject, recipients=[to_email], body=body)
+    mail.send(msg)

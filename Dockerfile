@@ -38,6 +38,8 @@ ENV PYTHONWARNINGS="ignore::DeprecationWarning"
 EXPOSE 5000
 
 # Run the Flask application
-CMD ["sh", "-c", "npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch & flask run --host=0.0.0.0 --reload"]
+#CMD ["sh", "-c", "npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch & flask run --host=0.0.0.0 --reload"]
+CMD ["sh", "-c", "npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css && flask run --host=0.0.0.0 --port=5000"]
+
 
 

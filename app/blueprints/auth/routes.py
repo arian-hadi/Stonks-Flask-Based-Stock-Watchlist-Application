@@ -50,6 +50,9 @@ def register():
         db.session.add(user)
         db.session.commit()
 
+        user.generate_otp()
+        send_otp_email(user.email, user.otp_code)
+
         flash('Registration successful. Please log in.', 'success')
         return redirect(url_for('auth.login'))
 

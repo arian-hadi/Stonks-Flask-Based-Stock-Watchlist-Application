@@ -9,7 +9,7 @@ FINNHUB_URL = "https://finnhub.io/api/v1/quote"
 
 
 stock_cache = {}
-CACHE_EXPIRY_TIME = 60  # Cache expiration time in seconds
+CACHE_EXPIRY_TIME = 360  # Cache expiration time in seconds
 
 def fetch_stock_quote(symbol):
     """Fetch stock data from Finnhub API."""
