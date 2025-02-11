@@ -25,6 +25,11 @@ COPY pyproject.toml poetry.lock ./
 # Install dependencies
 RUN poetry install --no-dev --no-interaction --no-ansi
 
+#This is only for render setup!
+# Install TailwindCSS globally
+RUN npm install -g tailwindcss
+
+
 # Copy the rest of the application files
 COPY . .
 
@@ -39,7 +44,8 @@ EXPOSE 5000
 
 # Run the Flask application
 #CMD ["sh", "-c", "npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch & flask run --host=0.0.0.0 --reload"]
-CMD ["sh", "-c", "npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css && flask run --host=0.0.0.0 --port=5000"]
+CMD ["sh", "-c", "tailwindcss -i ./static/css/input.css -o ./static/css/output.css && flask run --host=0.0.0.0 --port=5000"]
+
 
 
 
