@@ -176,3 +176,30 @@ def delete_account():
 @auth_bp.route('/account-deleted')
 def account_deleted():
     return render_template('auth/account_deleted.html')
+
+
+@auth_bp.route('/change-username', methods=['POST'])
+@login_required
+def change_username():
+    new_username = request.form.get("new_username").strip()
+
+    if not new_username:
+        flash("Username cannot be empty.", "danger")
+        return redirect(url_for('profile_page'))
+
+    if new_username == current_user.username:
+        flash("This is already your username.", "warning")
+        return redirect(url_for('auth.profile'))
+
+    # Check if the username is taken
+    existing_user = User.query.filter_by(username=new_username).first()
+    if existing_user:
+        flash("This username is already taken. Choose another.", "danger")
+        return redirect(url_for('profile_page'))
+
+    # Update username
+    current_user.username = new_username
+    db.session.commit()
+
+    flash("Username updated successfully!", "success")
+    return redirect(url_for('auth.profile'))
