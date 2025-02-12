@@ -45,9 +45,12 @@ class User(db.Model, UserMixin):
         self.otp_code = f"{random.randint(100000, 999999)}"
         self.otp_expiry = datetime.now(timezone.utc) + timedelta(minutes=10)
         db.session.commit()
-
+    
     def verify_otp(self, otp):
+        if not self.otp_code or not self.otp_expiry:  # Ensure OTP is set
+            return False
         return self.otp_code == otp and datetime.now(timezone.utc) < self.otp_expiry
+
 
 class Stock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
