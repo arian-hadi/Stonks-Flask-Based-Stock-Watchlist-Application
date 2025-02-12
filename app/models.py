@@ -20,6 +20,7 @@ class User(db.Model, UserMixin):
 
     otp_code = db.Column(db.String(6), nullable=True)
     otp_expiry = db.Column(db.DateTime(timezone=True), nullable=True)
+    is_verified = db.Column(db.Boolean, default=False)
 
     
 

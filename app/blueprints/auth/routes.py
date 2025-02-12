@@ -19,6 +19,12 @@ def login():
             form.password.errors.append("Invalid password")  # Show error under password field
             return render_template('auth/login.html', form=form)
 
+
+        if not user.is_verified:
+            flash('Please verify your account using the OTP sent to your email.', 'warning')
+            return redirect(url_for('auth.verify_otp', user_id=user.id))  # Redirect to OTP verification page
+        
+        
         login_user(user)
         return redirect(url_for('watchlist.watchlist'))
 
@@ -67,11 +73,14 @@ def verify_otp(user_id):
     if request.method == 'POST':
         otp = request.form.get('otp')
         if user.verify_otp(otp):
+            user.is_verified = True  # ✅ Mark as verified
+            db.session.commit()
             flash('Your account has been verified. Please log in.', 'success')
             return redirect(url_for('auth.login'))
         else:
             flash('Invalid or expired OTP.', 'danger')
     return render_template('auth/verify_otp.html', user_id=user.id)
+
 
 
 @auth_bp.route('/logout')
