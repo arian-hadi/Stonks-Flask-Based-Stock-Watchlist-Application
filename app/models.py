@@ -19,7 +19,8 @@ class User(db.Model, UserMixin):
     reset_token_expiry = db.Column(db.DateTime, nullable=True) 
 
     otp_code = db.Column(db.String(6), nullable=True)
-    otp_expiry = db.Column(db.DateTime, nullable=True)
+    otp_expiry = db.Column(db.DateTime(timezone=True), nullable=True)
+
     
 
     def set_password(self, password):
