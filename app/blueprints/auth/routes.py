@@ -70,16 +70,19 @@ def register():
 @auth_bp.route('/verify_otp/<int:user_id>', methods=['GET', 'POST'])
 def verify_otp(user_id):
     user = User.query.get_or_404(user_id)
+    error_message = None  # For displaying specific errors
+
     if request.method == 'POST':
         otp = request.form.get('otp')
         if user.verify_otp(otp):
-            user.is_verified = True  # ✅ Mark as verified
+            user.is_verified = True
             db.session.commit()
             flash('Your account has been verified. Please log in.', 'success')
             return redirect(url_for('auth.login'))
         else:
-            flash('Invalid or expired OTP.', 'danger')
-    return render_template('auth/verify_otp.html', user_id=user.id)
+            error_message = 'Invalid or expired OTP. Please try again.'
+
+    return render_template('auth/verify_otp.html', user_id=user.id, error_message=error_message)
 
 
 
