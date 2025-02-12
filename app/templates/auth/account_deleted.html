@@ -1,16 +1,14 @@
 {% extends "base.html" %}
-{% block title %} Account deleted {% endblock %}
+{% block title %}Account Deleted{% endblock %}
 
-{% block body_class %}flex items-center justify-center min-h-screen bg-gray-100{% endblock %}
+{% block body_class %}min-h-screen bg-gray-900 text-gray-100 flex items-center justify-center{% endblock %}
+
 {% block content %}
-<div class="bg-white p-6 rounded-lg shadow-md text-center">
-    <div class="bg-white p-6 rounded-lg shadow-md text-center">
-        <h2 class="text-2xl font-bold text-red-600">Account Deleted</h2>
-        <p class="text-gray-700 mt-2">Your account has been successfully deleted.</p>
-        
-        <a href="{{ url_for('auth.login') }}" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded-lg shadow">
-            Return to Login
-        </a>
-    </div>
+<div class="bg-gray-800 shadow-2xl rounded-3xl w-full max-w-md p-8 space-y-6 mx-auto flex flex-col items-center text-center">
+    <h2 class="text-3xl font-bold text-red-500 mb-4">Account Deleted</h2>
+    <p class="text-gray-400">Your account has been successfully deleted.</p>
+    <a href="{{ url_for('auth.login') }}" class="mt-4 inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow-md transition duration-300">
+        Return to Login
+    </a>
 </div>
 {% endblock %}
