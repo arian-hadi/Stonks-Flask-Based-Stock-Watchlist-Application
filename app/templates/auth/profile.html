@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %} Profile {% endblock %}
+
+{% block body_class %}flex items-center justify-center min-h-screen bg-gray-100{% endblock %}
+{% block content %}
+    <a href="{{ url_for('auth.delete_account') }}" class="bg-red-500 text-white px-4 py-2 rounded">Delete Account</a>
+{% endblock %}

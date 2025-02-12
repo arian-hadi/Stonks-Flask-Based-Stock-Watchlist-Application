@@ -7,7 +7,7 @@
     
     <title>{% block title %}Default Title{% endblock %}</title>
 </head>
-<body class="{{ body_class | default('bg-gray-100 text-gray-900') }}"> 
+<body class="{% block body_class %}bg-gray-100 text-gray-900{% endblock %}"> 
     <!-- Main Content Block -->
  
         {% block content %}

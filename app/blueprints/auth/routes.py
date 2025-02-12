@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, request,redirect, url_for,flash 
-from app.forms import RegisterForm, LoginForm, ForgotPasswordForm, ResetPasswordForm
+from app.forms import RegisterForm, LoginForm, ForgotPasswordForm, ResetPasswordForm,DeleteAccountForm
 from app.extension import db
-from app.models import User
-from app.utils.email import send_reset_email
-from flask_login import login_user, logout_user,login_required
+from app.models import User,Notification,Stock
+from app.utils.email import send_reset_email, send_otp_email
+from flask_login import login_user, logout_user,login_required, current_user
 from datetime import datetime, timedelta, timezone
 
 
@@ -53,11 +53,25 @@ def register():
         user.generate_otp()
         send_otp_email(user.email, user.otp_code)
 
-        flash('Registration successful. Please log in.', 'success')
-        return redirect(url_for('auth.login'))
+        # flash('Registration successful. Please log in.', 'success')
+        # return redirect(url_for('auth.login'))
+        flash('An OTP has been sent to your email.', 'info')
+        return redirect(url_for('auth.verify_otp', user_id=user.id))
 
     return render_template('auth/signup.html', form=form)
 
+
+@auth_bp.route('/verify_otp/<int:user_id>', methods=['GET', 'POST'])
+def verify_otp(user_id):
+    user = User.query.get_or_404(user_id)
+    if request.method == 'POST':
+        otp = request.form.get('otp')
+        if user.verify_otp(otp):
+            flash('Your account has been verified. Please log in.', 'success')
+            return redirect(url_for('auth.login'))
+        else:
+            flash('Invalid or expired OTP.', 'danger')
+    return render_template('auth/verify_otp.html', user_id=user.id)
 
 
 @auth_bp.route('/logout')
@@ -122,3 +136,43 @@ def reset_password_success():
 @auth_bp.route('/reset-password-failed')
 def reset_password_failed():
     return render_template('auth/reset_password_failed.html')
+
+
+@auth_bp.route('/profile')
+@login_required
+def profile():
+    return render_template('auth/profile.html', user=current_user)
+
+
+@auth_bp.route('/delete-account', methods=['GET', 'POST'])
+@login_required
+def delete_account():
+    form = DeleteAccountForm()
+    
+    if form.validate_on_submit():
+        if not current_user.check_password(form.password.data):  # Verify password
+            flash("Incorrect password. Please try again.", "danger")
+            return redirect(url_for('auth.delete_account'))  
+
+        user = User.query.get_or_404(current_user.id)
+
+        # Delete related records
+        Stock.query.filter_by(user_id=user.id).delete()
+        Notification.query.filter_by(user_id=user.id).delete()
+
+        # Delete user account
+        db.session.delete(user)
+        db.session.commit()
+
+        # Log out the user
+        logout_user()
+
+        flash("Your account has been deleted successfully.", "success")
+        return redirect(url_for('auth.account_deleted'))  # Redirect to success page
+
+    return render_template('auth/delete_account.html', form=form)
+
+
+@auth_bp.route('/account-deleted')
+def account_deleted():
+    return render_template('auth/account_deleted.html')

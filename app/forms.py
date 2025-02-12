@@ -53,3 +53,8 @@ class AddStockForm(FlaskForm):
     submit = SubmitField("Add to my stocks")
 
 
+class DeleteAccountForm(FlaskForm):
+    password = PasswordField('Confirm Password', validators=[DataRequired()])
+    submit = SubmitField('Delete Account')
+
+

@@ -3,7 +3,7 @@ from flask_login import UserMixin
 from flask_bcrypt import Bcrypt
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import random
 
 
@@ -18,8 +18,8 @@ class User(db.Model, UserMixin):
     reset_token = db.Column(db.String(255), nullable=True)  
     reset_token_expiry = db.Column(db.DateTime, nullable=True) 
 
-    # otp_code = db.Column(db.String(6), nullable=True)
-    # otp_expiry = db.Column(db.DateTime, nullable=True)
+    otp_code = db.Column(db.String(6), nullable=True)
+    otp_expiry = db.Column(db.DateTime, nullable=True)
     
 
     def set_password(self, password):
@@ -41,13 +41,13 @@ class User(db.Model, UserMixin):
             return None
         return User.query.filter_by(email=email).first()
     
-    # def generate_otp(self):
-    #     self.otp_code = f"{random.randint(100000, 999999)}"
-    #     self.otp_expiry = datetime.now(datetime.timezone.utc) + timedelta(minutes=10)
-    #     db.session.commit()
+    def generate_otp(self):
+        self.otp_code = f"{random.randint(100000, 999999)}"
+        self.otp_expiry = datetime.now(timezone.utc) + timedelta(minutes=10)
+        db.session.commit()
 
-    # def verify_otp(self, otp):
-    #     return self.otp_code == otp and datetime.now(datetime.timezone.utc) < self.otp_expiry
+    def verify_otp(self, otp):
+        return self.otp_code == otp and datetime.now(timezone.utc) < self.otp_expiry
 
 class Stock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
