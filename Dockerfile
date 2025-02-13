@@ -25,9 +25,9 @@ COPY pyproject.toml poetry.lock ./
 # Install dependencies
 RUN poetry install --no-dev --no-interaction --no-ansi
 
-#This is only for render setup!
-# Install TailwindCSS globally
-RUN npm install -g tailwindcss
+# #This is only for render setup!
+# # Install TailwindCSS globally
+# RUN npm install -g tailwindcss
 
 
 # Copy the rest of the application files
