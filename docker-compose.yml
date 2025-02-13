@@ -1,7 +1,13 @@
 
 version: '3.8'
-
 services:
+  flask_app:
+    build: .
+    command: >
+      sh -c "flask db upgrade && flask run --host=0.0.0.0"
+    environment:
+      - DATABASE_URL=postgresql://stonks_how6_user:kV9ri2Das0dhWeG8Vgf1kG8JXdOiUp13@dpg-culld356l47c73dqoc50-a:5432/stonks_how6
+
   web:
     build: .
     container_name: flask_app
