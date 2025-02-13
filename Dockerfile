@@ -42,8 +42,6 @@ ENV PYTHONWARNINGS="ignore::DeprecationWarning"
 # Expose Flask port
 EXPOSE 5000
 
-RUN flask db upgrade
-
 # Run the Flask application
 #CMD ["sh", "-c", "npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch & flask run --host=0.0.0.0 --reload"]
 CMD ["sh", "-c", "npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch & flask run --host=0.0.0.0 --port=5000"]
